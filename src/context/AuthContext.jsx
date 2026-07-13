@@ -1,23 +1,22 @@
-import { createContext, useContext, useEffect, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { useContext, useState } from "react";
 
-const AuthContext = createContext();
+import { AuthContext } from "./authContextObject";
+
+const getStoredToken = () => localStorage.getItem("token") || null;
+
+const getStoredUser = () => {
+  if (!getStoredToken()) {
+    return null;
+  }
+
+  const storedUser = localStorage.getItem("user");
+  return storedUser ? JSON.parse(storedUser) : null;
+};
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (token) {
-      const storedUser = localStorage.getItem("user");
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    }
-
-    setLoading(false);
-  }, [token]);
+  const [user, setUser] = useState(getStoredUser);
+  const [token, setToken] = useState(getStoredToken);
 
   const login = (userData, jwtToken) => {
     localStorage.setItem("token", jwtToken);
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }) => {
         token,
         login,
         logout,
-        loading,
+        loading: false,
         isAuthenticated: !!token,
       }}
     >

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { Lock, Mail, ShieldCheck } from "lucide-react";
 
 import api from "../../api/axios";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();

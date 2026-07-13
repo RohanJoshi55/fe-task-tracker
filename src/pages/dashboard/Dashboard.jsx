@@ -3,7 +3,7 @@ import { CheckCircle2, Clock3, ListTodo, Loader2, PlayCircle } from "lucide-reac
 import { toast } from "react-toastify";
 
 import api from "../../api/axios";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import Navbar from "../../components/layout/Navbar";
 import StatCard from "../../components/dashboard/StatCard";
 import "./Dashboard.css";

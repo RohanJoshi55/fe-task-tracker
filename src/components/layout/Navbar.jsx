@@ -1,8 +1,16 @@
+import { Link, useNavigate } from "react-router-dom";
 import { LogOut, LayoutDashboard, ListTodo, Users } from "lucide-react";
+
 import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar">
@@ -15,9 +23,19 @@ const Navbar = () => {
       </div>
 
       <div className="nav-links">
-        <span><LayoutDashboard size={16} /> Dashboard</span>
-        <span><ListTodo size={16} /> Tasks</span>
-        {user?.role === "admin" && <span><Users size={16} /> Users</span>}
+        <Link to="/dashboard">
+          <LayoutDashboard size={16} /> Dashboard
+        </Link>
+
+        <Link to="/tasks">
+          <ListTodo size={16} /> Tasks
+        </Link>
+
+        {user?.role === "admin" && (
+          <span>
+            <Users size={16} /> Users
+          </span>
+        )}
       </div>
 
       <div className="nav-user">
@@ -26,7 +44,7 @@ const Navbar = () => {
           <small>{user?.role}</small>
         </div>
 
-        <button onClick={logout} className="logout-btn">
+        <button onClick={handleLogout} className="logout-btn">
           <LogOut size={16} />
           Logout
         </button>
