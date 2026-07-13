@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/routes/ProtectedRoute";
 import Login from "./pages/auth/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Tasks from "./pages/tasks/Tasks";
+import CreateTask from "./pages/tasks/CreateTask";
 
 const App = () => {
   return (
@@ -25,6 +26,15 @@ const App = () => {
         element={
           <ProtectedRoute>
             <Tasks />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/tasks/create"
+        element={
+          <ProtectedRoute>
+            <CreateTask />
           </ProtectedRoute>
         }
       />

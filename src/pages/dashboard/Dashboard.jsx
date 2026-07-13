@@ -7,11 +7,13 @@ import { useAuth } from "../../context/useAuth";
 import Navbar from "../../components/layout/Navbar";
 import StatCard from "../../components/dashboard/StatCard";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, token } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
@@ -88,8 +90,8 @@ const Dashboard = () => {
           <div className="glass-panel">
             <h3>Quick Actions</h3>
             <div className="quick-actions">
-              <button>Create Task</button>
-              <button>View Tasks</button>
+              {["admin", "manager"].includes(user?.role) && (<button onClick={() => navigate("/tasks/create")}>Create Task</button>)}
+              <button onClick={() => navigate("/tasks")}>View Tasks</button>
               {user?.role === "admin" && <button>Manage Users</button>}
             </div>
           </div>
