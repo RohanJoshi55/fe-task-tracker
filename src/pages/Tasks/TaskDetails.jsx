@@ -14,12 +14,14 @@ import { toast } from "react-toastify";
 
 import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 import {
   deleteTask,
   getAssignableUsers,
   getTaskById,
   updateTask,
+  updateTaskStatus,
 } from "../../api/taskApi";
 
 import "./TaskDetails.css";
@@ -43,6 +45,7 @@ const formatDateForInput = (dateValue) => {
   return date.toISOString().split("T")[0];
 };
 
+
 const TaskDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -56,6 +59,9 @@ const TaskDetails = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [statusUpdating, setStatusUpdating] = useState(false);
 
   const canManageTask = ["admin", "manager"].includes(user?.role);
 
@@ -190,29 +196,48 @@ const TaskDetails = () => {
     }
   };
 
-  const handleDelete = async () => {
-    const confirmed = window.confirm(
-      `Delete "${task.title}" permanently?`
+ const handleDelete = async () => {
+  try {
+    setDeleting(true);
+
+    await deleteTask(id, token);
+
+    toast.success("Task deleted successfully");
+    navigate("/tasks");
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Failed to delete task"
+    );
+  } finally {
+    setDeleting(false);
+    setDeleteModalOpen(false);
+  }
+};
+
+const handleEmployeeStatusUpdate = async (event) => {
+  const newStatus = event.target.value;
+
+  try {
+    setStatusUpdating(true);
+
+    const response = await updateTaskStatus(
+      id,
+      newStatus,
+      token
     );
 
-    if (!confirmed) return;
+    setTask(response.task);
 
-    try {
-      setDeleting(true);
-
-      await deleteTask(id, token);
-
-      toast.success("Task deleted successfully");
-      navigate("/tasks");
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to delete task"
-      );
-    } finally {
-      setDeleting(false);
-    }
-  };
+    toast.success("Task status updated successfully");
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message ||
+        "Failed to update task status"
+    );
+  } finally {
+    setStatusUpdating(false);
+  }
+};
 
   if (loading) {
     return (
@@ -268,13 +293,13 @@ const TaskDetails = () => {
                 </button>
 
                 <button
-                  className="task-delete-button"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
-                  <Trash2 size={17} />
-                  {deleting ? "Deleting..." : "Delete"}
-                </button>
+  className="task-delete-button"
+  onClick={() => setDeleteModalOpen(true)}
+  disabled={deleting}
+>
+  <Trash2 size={17} />
+  Delete
+</button>
               </>
             )}
           </div>
@@ -421,13 +446,25 @@ const TaskDetails = () => {
 
             <article className="task-information-card">
               <div className="task-info-row">
-                <span>Status</span>
-                <strong
-                  className={`badge status-${task.status}`}
-                >
-                  {task.status}
-                </strong>
-              </div>
+  <span>Status</span>
+
+  {user?.role === "employee" ? (
+    <select
+      className="employee-status-select"
+      value={task.status}
+      onChange={handleEmployeeStatusUpdate}
+      disabled={statusUpdating}
+    >
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+  ) : (
+    <strong className={`badge status-${task.status}`}>
+      {task.status}
+    </strong>
+  )}
+</div>
 
               <div className="task-info-row">
                 <span>Priority</span>
@@ -478,6 +515,18 @@ const TaskDetails = () => {
           </section>
         )}
       </main>
+
+      <ConfirmModal
+  isOpen={deleteModalOpen}
+  title="Delete Task?"
+  message={`Are you sure you want to permanently delete "${task.title}"? This action cannot be undone.`}
+  confirmText="Delete Task"
+  loading={deleting}
+  danger
+  onConfirm={handleDelete}
+  onCancel={() => setDeleteModalOpen(false)}
+/>
+
     </div>
   );
 };

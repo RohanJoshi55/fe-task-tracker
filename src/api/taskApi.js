@@ -41,6 +41,20 @@ export const updateTask = async (taskId, taskData, token) => {
   return response.data;
 };
 
+export const updateTaskStatus = async (
+  taskId,
+  status,
+  token
+) => {
+  const response = await api.patch(
+    `/tasks/${taskId}/status`,
+    { status },
+    authConfig(token)
+  );
+
+  return response.data;
+};
+
 export const deleteTask = async (taskId, token) => {
   const response = await api.delete(
     `/tasks/${taskId}`,
