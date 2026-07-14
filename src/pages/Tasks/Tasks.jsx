@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Search, ListTodo } from "lucide-react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
@@ -9,6 +10,7 @@ import "./Tasks.css";
 
 const Tasks = () => {
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   const [tasks, setTasks] = useState([]);
   const [meta, setMeta] = useState({
@@ -133,31 +135,43 @@ const Tasks = () => {
 
                 <tbody>
                   {tasks.map((task) => (
-                    <tr key={task._id}>
-                      <td>
-                        <strong>{task.title}</strong>
-                        <span>{task.description || "No description"}</span>
-                      </td>
-                      <td>
-                        <span className={`badge status-${task.status}`}>
-                          {task.status}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge priority-${task.priority}`}>
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td>{task.assignedTo?.name || "N/A"}</td>
-                      <td>{task.createdBy?.name || "N/A"}</td>
-                      <td>
-                        {task.dueDate
-                          ? new Date(task.dueDate).toLocaleDateString()
-                          : "No due date"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+    <tr
+      key={task._id}
+      onClick={() => navigate(`/tasks/${task._id}`)}
+    >
+      <td>
+        <strong>{task.title}</strong>
+        <span>
+          {task.description || "No description"}
+        </span>
+      </td>
+
+      <td>
+        <span className={`badge status-${task.status}`}>
+          {task.status}
+        </span>
+      </td>
+
+      <td>
+        <span
+          className={`badge priority-${task.priority}`}
+        >
+          {task.priority}
+        </span>
+      </td>
+
+      <td>{task.assignedTo?.name || "N/A"}</td>
+      <td>{task.createdBy?.name || "N/A"}</td>
+
+      <td>
+        {task.dueDate
+          ? new Date(task.dueDate).toLocaleDateString()
+          : "No due date"}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
               </table>
             </div>
           )}
