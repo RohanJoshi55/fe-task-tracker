@@ -1,5 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, ListTodo, Users } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  ListTodo,
+  LogOut,
+  Users,
+} from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
 
@@ -7,15 +12,23 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  const canViewUsers = ["admin", "manager"].includes(
+    user?.role
+  );
+
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  const getNavClass = ({ isActive }) =>
+    isActive ? "nav-link active" : "nav-link";
+
   return (
     <nav className="navbar">
       <div className="nav-brand">
         <div className="brand-logo">TT</div>
+
         <div>
           <h3>Task Tracker</h3>
           <span>Finance Workspace</span>
@@ -23,18 +36,24 @@ const Navbar = () => {
       </div>
 
       <div className="nav-links">
-        <Link to="/dashboard">
-          <LayoutDashboard size={16} /> Dashboard
-        </Link>
+        <NavLink
+          to="/dashboard"
+          className={getNavClass}
+        >
+          <LayoutDashboard size={16} />
+          Dashboard
+        </NavLink>
 
-        <Link to="/tasks">
-          <ListTodo size={16} /> Tasks
-        </Link>
+        <NavLink to="/tasks" className={getNavClass}>
+          <ListTodo size={16} />
+          Tasks
+        </NavLink>
 
-        {user?.role === "admin" && (
-          <span>
-            <Users size={16} /> Users
-          </span>
+        {canViewUsers && (
+          <NavLink to="/users" className={getNavClass}>
+            <Users size={16} />
+            Users
+          </NavLink>
         )}
       </div>
 
@@ -44,7 +63,11 @@ const Navbar = () => {
           <small>{user?.role}</small>
         </div>
 
-        <button onClick={handleLogout} className="logout-btn">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="logout-btn"
+        >
           <LogOut size={16} />
           Logout
         </button>

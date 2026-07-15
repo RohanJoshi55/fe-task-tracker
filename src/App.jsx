@@ -7,6 +7,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Tasks from "./pages/tasks/Tasks";
 import CreateTask from "./pages/tasks/CreateTask";
 import TaskDetails from "./pages/tasks/TaskDetails";
+import Users from "./pages/users/Users";
 
 const App = () => {
   return (
@@ -50,6 +51,15 @@ const App = () => {
         element={
           <ProtectedRoute>
             <TaskDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <Users />
           </ProtectedRoute>
         }
       />
